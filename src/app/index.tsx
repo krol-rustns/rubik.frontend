@@ -12,8 +12,11 @@ export default function Home() {
   }
   return (
     <View style={styles.container}>
-      <Image source={require('/home/loli/Documents/working/rubikapp/assets/images/logo.png')} style={styles.logo} />
+      <View style={styles.spacer} />
+      <Image source={require('../../assets/images/logo.svg')} style={styles.logo} />
       <Text style={styles.title}>rubik</Text>
+
+      <View style={styles.spacer} />
       <Link href="./login" style={styles.button} asChild>
         <TouchableOpacity>
           <Text style={styles.buttonText}>Entrar</Text>
@@ -31,16 +34,16 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F6DED8',
+    paddingBottom: 30,
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 170,
+    height: 200,
   },
   title: {
-    fontSize: 60,
+    fontSize: 70,
     fontWeight: 'bold',
     color: '#C1272D',
     marginBottom: 40,
@@ -59,5 +62,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 16,
     fontWeight: '600',
+  },
+  spacer: {
+    flex: 1,
   },
 });

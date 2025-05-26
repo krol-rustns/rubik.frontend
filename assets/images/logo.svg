@@ -1,0 +1,35 @@
+<svg width="104" height="125" viewBox="0 0 104 125" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="31" y="39" width="44" height="54" fill="#F6DED8"/>
+<rect x="56.8311" y="8" width="53.8131" height="22.4333" transform="rotate(43.6105 56.8311 8)" fill="#BF3131"/>
+<rect width="51.0182" height="14.5456" transform="matrix(0.849062 -0.528293 -0.528293 -0.849062 55.0573 122.303)" fill="#BF3131"/>
+<rect x="49.6906" y="121.779" width="53.8131" height="14.5456" transform="rotate(-148.11 49.6906 121.779)" fill="#BF3131"/>
+<rect x="78.9065" y="107" width="54" height="13" transform="rotate(180 78.9065 107)" fill="#BF3131"/>
+<rect width="53.8131" height="22.4333" transform="matrix(-0.724045 0.689753 0.689753 0.724045 47.9631 8)" fill="#BF3131"/>
+<rect width="48" height="22" transform="matrix(0 -1 -1 0 27 93)" fill="#BF3131"/>
+<rect width="48" height="22" transform="matrix(0 -1 -1 0 99 94)" fill="#BF3131"/>
+<line x1="52" y1="4" x2="52" y2="38" stroke="#8F1E1E" stroke-width="6"/>
+<line x1="55.25" y1="5" x2="55.25" y2="39" stroke="#8F1E1E" stroke-width="0.5"/>
+<line x1="51.874" y1="4.24077" x2="4.24077" y2="49.126" stroke="#8F1E1E" stroke-width="6" stroke-linecap="round"/>
+<line x1="54.2578" y1="33.1834" x2="28.0574" y2="57.8722" stroke="#8F1E1E" stroke-width="6"/>
+<line y1="-3" x2="36" y2="-3" transform="matrix(0.727789 0.685801 0.685801 -0.727789 53 31)" stroke="#8F1E1E" stroke-width="6"/>
+<line x1="3" y1="-3" x2="58" y2="-3" transform="matrix(-0.849113 -0.52821 -0.52821 0.849113 52.7959 124.221)" stroke="#8F1E1E" stroke-width="6" stroke-linecap="round"/>
+<line x1="52.9627" y1="120.089" x2="99.6639" y2="91.0373" stroke="#8F1E1E" stroke-width="6" stroke-linecap="round"/>
+<line x1="54.7025" y1="119.109" x2="76.5663" y2="93.0708" stroke="#8F1E1E" stroke-width="6"/>
+<line y1="-3" x2="34" y2="-3" transform="matrix(-0.643051 -0.765823 -0.765823 0.643051 47.8637 121.038)" stroke="#8F1E1E" stroke-width="6"/>
+<line y1="-3" x2="54" y2="-3" transform="matrix(-1 0 0 1 79 95)" stroke="#8F1E1E" stroke-width="6"/>
+<line y1="-3" x2="24" y2="-3" transform="matrix(-0.973489 0.228734 0.228734 0.973489 100.364 90)" stroke="#8F1E1E" stroke-width="6"/>
+<line x1="3.6862" y1="87.0795" x2="27.0499" y2="92.5692" stroke="#8F1E1E" stroke-width="6"/>
+<line x1="8.7332" y1="42.5513" x2="28.3226" y2="56.417" stroke="#8F1E1E" stroke-width="6"/>
+<line y1="-3" x2="24" y2="-3" transform="matrix(-0.816224 0.577735 0.577735 0.816224 95.5894 45)" stroke="#8F1E1E" stroke-width="6"/>
+<line x1="3" y1="-3" x2="68.4493" y2="-3" transform="matrix(0.727789 0.685801 0.685801 -0.727789 52 0)" stroke="#8F1E1E" stroke-width="6" stroke-linecap="round"/>
+<line x1="101" y1="50" x2="101" y2="90" stroke="#8F1E1E" stroke-width="6" stroke-linecap="round"/>
+<line x1="4" y1="50" x2="4" y2="90" stroke="#8F1E1E" stroke-width="6" stroke-linecap="round"/>
+<line x1="29" y1="56" x2="29" y2="95.0512" stroke="#8F1E1E" stroke-width="6"/>
+<line x1="29.1715" y1="56.9919" x2="3.24331" y2="86.1934" stroke="#8F1E1E" stroke-width="6"/>
+<line y1="-3" x2="39.0512" y2="-3" transform="matrix(0.663953 0.747774 0.747774 -0.663953 78 55)" stroke="#8F1E1E" stroke-width="6"/>
+<line x1="76" y1="56" x2="76" y2="95.0512" stroke="#8F1E1E" stroke-width="6"/>
+<rect x="44" y="62" width="7" height="7" rx="0.5" fill="#8F1E1E"/>
+<rect x="53" y="71" width="7" height="7" rx="0.5" fill="#8F1E1E"/>
+<rect x="44" y="71" width="7" height="7" rx="0.5" fill="#8F1E1E"/>
+<rect x="53" y="62" width="7" height="7" rx="0.5" fill="#8F1E1E"/>
+</svg>
