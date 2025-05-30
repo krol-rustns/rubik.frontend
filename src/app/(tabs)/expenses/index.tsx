@@ -323,10 +323,6 @@ export default function ExpensesScreen() {
       
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => {
-          // Feature de add despesa
-          alert('Adicionar nova despesa');
-        }}
       >
         <Plus color="#FFFFFF" size={24} />
       </TouchableOpacity>

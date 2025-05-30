@@ -52,7 +52,7 @@ export default function HomeScreen() {
   };
 
   const getTotalPropertyValue = () => {
-    return properties.reduce((total, property) => total + property.value, 0);
+    return 0;
   };
 
   const getPendingExpensesValue = () => {
@@ -84,9 +84,9 @@ export default function HomeScreen() {
         
         <Card style={styles.statCard}>
           <Text style={styles.statValue}>
-            {formatCurrency(getTotalPropertyValue())}
+            {getTotalPropertyValue()}
           </Text>
-          <Text style={styles.statLabel}>Valor Total</Text>
+          <Text style={styles.statLabel}>Imóveis alugados</Text>
         </Card>
         
         <Card style={styles.statCard}>

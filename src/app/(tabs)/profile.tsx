@@ -42,21 +42,6 @@ export default function ProfileScreen() {
       title: 'Notificações',
       onPress: () => Alert.alert('Funcionalidade', 'Notificações'),
     },
-    {
-      icon: <Shield size={20} color="#666" />,
-      title: 'Privacidade e Segurança',
-      onPress: () => Alert.alert('Funcionalidade', 'Privacidade e Segurança'),
-    },
-    {
-      icon: <FileText size={20} color="#666" />,
-      title: 'Termos de Uso',
-      onPress: () => Alert.alert('Funcionalidade', 'Termos de Uso'),
-    },
-    {
-      icon: <HelpCircle size={20} color="#666" />,
-      title: 'Ajuda e Suporte',
-      onPress: () => Alert.alert('Funcionalidade', 'Ajuda e Suporte'),
-    },
   ];
 
   return (
@@ -104,7 +89,7 @@ export default function ProfileScreen() {
           <Text style={styles.logoutText}>Sair</Text>
         </TouchableOpacity>
         
-        <Text style={styles.versionText}>ImobiGestor v1.0.0</Text>
+        <Text style={styles.versionText}>Rubik v1.0.0</Text>
       </View>
     </ScrollView>
   );
