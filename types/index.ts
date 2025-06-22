@@ -23,7 +23,7 @@ export interface Property {
   qtdQuartos: number;
   qtdBanheiro: number;
   qtdVagasGaragem: number;
-  dataAquisicao: Date;
+  dataAquisicao: string;
   registroCartorio: string;
   inscricaoIptu: string;
   inscricaoCaesb: string;

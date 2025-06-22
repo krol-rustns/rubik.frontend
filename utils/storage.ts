@@ -297,17 +297,25 @@ export const storage = {
     }
   },
   
-  saveProperty: (property: Omit<Property, 'id'>): Promise<Property> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newProperty = {
-          ...property,
-          id: Date.now().toString(),
-        };
-        mockProperties.push(newProperty as Property);
-        resolve(newProperty as Property);
-      }, 500);
-    });
+  addProperty: async (propertyData: any): Promise<Property> => {
+    const token = await storage.getToken();
+
+    if (!token) {
+      throw new Error('No token found');
+    }
+
+    try {
+      const response = await api.post<Property>(`/imovel`, propertyData, token);
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      return response.data as Property;
+    } catch (error) {
+      console.error('Failed to add property:', error);
+      throw new Error('Failed to add property');
+    }
   },
   
   updateProperty: (updatedProperty: Property): Promise<Property> => {
