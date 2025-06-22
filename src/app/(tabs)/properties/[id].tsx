@@ -20,7 +20,8 @@ import {
   Waves,
   FileText,
   Plus,
-  Edit3
+  Edit3,
+  Building2
 } from 'lucide-react-native';
 import { Property, Document } from '../../../../types';
 import { storage } from '../../../../utils/storage';
@@ -56,7 +57,7 @@ export default function PropertyDetailScreen() {
   const loadProperty = async (propertyId: string) => {
     try {
       setLoading(true);
-      const data = await storage.getPropertyById(propertyId);
+      const data = await storage.getPropertyByCep(propertyId);
       if (data) {
         setProperty(data);
       } else {
@@ -78,7 +79,7 @@ export default function PropertyDetailScreen() {
     });
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: Date) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('pt-BR');
   };
@@ -140,13 +141,13 @@ export default function PropertyDetailScreen() {
       <View style={styles.header}>
         <View style={styles.typeContainer}>
           <Home size={20} color="#FFFFFF" />
-          <Text style={styles.typeText}>{property.type}</Text>
+          <Text style={styles.typeText}>{property.tipo}</Text>
         </View>
-        <Text style={styles.address}>{property.address}</Text>
+        <Text style={styles.address}>{property.endereco}</Text>
         <View style={styles.locationContainer}>
           <MapPin size={16} color="#FFFFFF" />
           <Text style={styles.locationText}>
-            {property.city}, {property.state}
+            {property.cidade}, {property.estado}
           </Text>
         </View>
       </View>
@@ -159,7 +160,7 @@ export default function PropertyDetailScreen() {
             <View style={styles.infoItem}>
               <Bed size={20} color="#666" />
               <View style={styles.infoTextContainer}>
-                <Text style={styles.infoValue}>{property.rooms}</Text>
+                <Text style={styles.infoValue}>{property.qtdQuartos}</Text>
                 <Text style={styles.infoLabel}>Quartos</Text>
               </View>
             </View>
@@ -167,7 +168,7 @@ export default function PropertyDetailScreen() {
             <View style={styles.infoItem}>
               <Bath size={20} color="#666" />
               <View style={styles.infoTextContainer}>
-                <Text style={styles.infoValue}>{property.bathrooms}</Text>
+                <Text style={styles.infoValue}>{property.qtdBanheiro}</Text>
                 <Text style={styles.infoLabel}>Banheiros</Text>
               </View>
             </View>
@@ -175,7 +176,7 @@ export default function PropertyDetailScreen() {
             <View style={styles.infoItem}>
               <Car size={20} color="#666" />
               <View style={styles.infoTextContainer}>
-                <Text style={styles.infoValue}>{property.garageSpaces}</Text>
+                <Text style={styles.infoValue}>{property.qtdVagasGaragem}</Text>
                 <Text style={styles.infoLabel}>Vagas</Text>
               </View>
             </View>
@@ -187,14 +188,14 @@ export default function PropertyDetailScreen() {
             <View style={styles.infoItemWide}>
               <Calendar size={20} color="#666" />
               <View style={styles.infoTextContainer}>
-                <Text style={styles.infoValue}>{formatDate(property.acquisitionDate)}</Text>
+                <Text style={styles.infoValue}>{formatDate(property.dataAquisicao)}</Text>
                 <Text style={styles.infoLabel}>Data de Aquisição</Text>
               </View>
             </View>
             
-            <View style={styles.infoItemWide}>
-              <Text style={styles.priceValue}>{formatCurrency(property.value)}</Text>
-              <Text style={styles.infoLabel}>Valor do Imóvel</Text>
+            <View style={styles.infoTextContainer}>
+              <Text style={styles.priceValue}>{formatCurrency(property.valorVenal)}</Text>
+              <Text style={styles.infoLabel}>Valor Investido</Text>
             </View>
           </View>
         </Card>
@@ -205,12 +206,12 @@ export default function PropertyDetailScreen() {
           <View style={styles.utilityItem}>
             <Zap size={20} color="#666" />
             <View style={styles.utilityContent}>
-              <Text style={styles.utilityProvider}>{property.utilities.energy.provider}</Text>
+              <Text style={styles.utilityProvider}>Neoenergia</Text>
               <Text style={styles.utilityLabel}>Energia</Text>
             </View>
             <View style={styles.registrationContainer}>
               <Text style={styles.registrationLabel}>Registro:</Text>
-              <Text style={styles.registrationValue}>{property.utilities.energy.registrationNumber}</Text>
+              <Text style={styles.registrationValue}>{property.inscricaoNeoenergia}</Text>
             </View>
           </View>
           
@@ -219,12 +220,26 @@ export default function PropertyDetailScreen() {
           <View style={styles.utilityItem}>
             <Waves size={20} color="#666" />
             <View style={styles.utilityContent}>
-              <Text style={styles.utilityProvider}>{property.utilities.water.provider}</Text>
+              <Text style={styles.utilityProvider}>CAESB</Text>
               <Text style={styles.utilityLabel}>Água</Text>
             </View>
             <View style={styles.registrationContainer}>
               <Text style={styles.registrationLabel}>Registro:</Text>
-              <Text style={styles.registrationValue}>{property.utilities.water.registrationNumber}</Text>
+              <Text style={styles.registrationValue}>{property.inscricaoCaesb}</Text>
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+          
+          <View style={styles.utilityItem}>
+            <Building2 size={20} color="#666" />
+            <View style={styles.utilityContent}>
+              <Text style={styles.utilityProvider}>Registro Cartório</Text>
+              <Text style={styles.utilityLabel}>Inscrição</Text>
+            </View>
+            <View style={styles.registrationContainer}>
+              <Text style={styles.registrationLabel}>Registro:</Text>
+              <Text style={styles.registrationValue}>{property.registroCartorio}</Text>
             </View>
           </View>
         </Card>
@@ -232,7 +247,7 @@ export default function PropertyDetailScreen() {
         <Card style={styles.documentsCard}>
           <View style={styles.documentsHeader}>
             <View style={styles.documentsHeaderLeft}>
-              <FileText size={20} color="#666" />
+              <FileText size={20} color="#666" style={{ marginBottom: 16, marginRight: 8 }} />
               <Text style={styles.sectionTitle}>Documentos</Text>
             </View>
             
@@ -245,20 +260,9 @@ export default function PropertyDetailScreen() {
             </TouchableOpacity>
           </View>
           
-          {property.documents.length === 0 ? (
-            <View style={styles.emptyDocuments}>
-              <Text style={styles.emptyText}>Nenhum documento cadastrado</Text>
-            </View>
-          ) : (
-            property.documents.map((doc) => (
-              <DocumentCard
-                key={doc.id}
-                document={doc}
-                onView={handleViewDocument}
-                onDelete={handleDeleteDocument}
-              />
-            ))
-          )}
+          <View style={styles.emptyDocuments}>
+            <Text style={styles.emptyText}>Nenhum documento cadastrado</Text>
+          </View>
         </Card>
         
         <View style={styles.buttonContainer}>
@@ -349,17 +353,22 @@ const styles = StyleSheet.create({
   },
   infoRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    marginBottom: 16,
   },
   infoItem: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   infoItemWide: {
-    flex: 1,
-    marginHorizontal: 8,
+    flex: 0.8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
   },
   infoTextContainer: {
     marginLeft: 8,

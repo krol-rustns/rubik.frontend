@@ -54,19 +54,19 @@ export default function PropertiesScreen() {
       const query = searchQuery.toLowerCase();
       result = result.filter(
         property => 
-          property.address.toLowerCase().includes(query) ||
-          property.city.toLowerCase().includes(query) ||
-          property.state.toLowerCase().includes(query)
+          property.endereco.toLowerCase().includes(query) ||
+          property.cidade.toLowerCase().includes(query) ||
+          property.estado.toLowerCase().includes(query)
       );
     }
     
     if (filters.type) {
-      result = result.filter(property => property.type === filters.type);
+      result = result.filter(property => property.tipo === filters.type);
     }
     
     if (filters.city) {
       result = result.filter(
-        property => property.city.toLowerCase() === filters.city.toLowerCase()
+        property => property.cidade.toLowerCase() === filters.city.toLowerCase()
       );
     }
     
@@ -79,16 +79,16 @@ export default function PropertiesScreen() {
   };
 
   const handlePropertyPress = (property: Property) => {
-    router.push(`../properties/${property.id}`);
+    router.push(`../properties/${property.cep}`);
   };
 
   const getCities = () => {
-    const cities = properties.map(property => property.city);
+    const cities = properties.map(property => property.cidade);
     return [...new Set(cities)].sort();
   };
 
   const getPropertyTypes = () => {
-    const types = properties.map(property => property.type);
+    const types = properties.map(property => property.tipo);
     return [...new Set(types)].sort();
   };
 

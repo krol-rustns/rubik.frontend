@@ -15,27 +15,20 @@ export interface UserData {
 
 export interface Property {
   id: string;
-  address: string;
-  type: 'Apartment' | 'House' | 'Commercial' | 'Land' | 'Other';
-  rooms: number;
-  bathrooms: number;
-  garageSpaces: number;
-  city: string;
-  state: string;
-  acquisitionDate: string;
-  value: number;
-  utilities: {
-    energy: {
-      provider: string;
-      registrationNumber: string;
-    };
-    water: {
-      provider: string;
-      registrationNumber: string;
-    };
-  };
-  documents: Document[];
-  expenses: Expense[];
+  endereco: string;
+  cidade: string;
+  estado: string;
+  cep: string;
+  tipo: 'Apartamento' | 'Casa' | 'Comercial' | 'Galpão' | 'Lote' | 'Chácara' | 'Outro';
+  qtdQuartos: number;
+  qtdBanheiro: number;
+  qtdVagasGaragem: number;
+  dataAquisicao: Date;
+  registroCartorio: string;
+  inscricaoIptu: string;
+  inscricaoCaesb: string;
+  inscricaoNeoenergia: string;
+  valorVenal: number;
 }
 
 export interface Document {

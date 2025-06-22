@@ -245,26 +245,56 @@ export const storage = {
 
       return response.data as UserData;
     } catch (error) {
+      console.error('Failed to fetch user data', error);
+      throw new Error('Failed to fetch user data');
+    }
+  },
+  
+  getProperties: async (): Promise<Property[]> => {
+    const user = await storage.getUser();
+    const token = await storage.getToken();
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+    if (!token) {
+      throw new Error('No token found');
+    }
+
+    try {
+      const emailEncoded = encodeURIComponent(user.email);
+      const response = await api.get(`/imovel/user/email?email=${emailEncoded}`, token);
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      return response.data as Property[];
+    } catch (error) {
       console.error('Failed to fetch properties:', error);
       throw new Error('Failed to fetch properties');
     }
   },
   
-  getProperties: (): Promise<Property[]> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(mockProperties);
-      }, 500);
-    });
-  },
+  getPropertyByCep: async (cep: string): Promise<Property | undefined> => {
+    const token = await storage.getToken();
+
+    if (!token) {
+      throw new Error('No token found');
+    }
+
+    try {
+      const response = await api.get(`/imovel/${cep}`, token);
   
-  getPropertyById: (id: string): Promise<Property | undefined> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const property = mockProperties.find(p => p.id === id);
-        resolve(property);
-      }, 300);
-    });
+      if (response.error) {
+        throw new Error(response.error);
+      }
+  
+      return response.data as Property;
+    } catch (error) {
+      console.error('Failed to fetch property by CEP:', error);
+      throw new Error('Failed to fetch property by CEP');
+    }
   },
   
   saveProperty: (property: Omit<Property, 'id'>): Promise<Property> => {

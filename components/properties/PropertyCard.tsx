@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { MapPin, Home, Waves, Zap } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { MapPin, Home, Waves, Zap, Eye, EyeClosed } from 'lucide-react-native';
 import { Property } from '../../types';
 import Card from '../ui/Card';
 
@@ -10,6 +10,8 @@ interface PropertyCardProps {
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property, onPress }) => {
+  const [isPriceVisible, setPriceVisible] = useState(false);
+  
   const formatCurrency = (value: number) => {
     return value.toLocaleString('pt-BR', {
       style: 'currency',
@@ -21,29 +23,29 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onPress }) => {
     <Card onPress={() => onPress(property)} style={styles.card}>
       <View style={styles.typeContainer}>
         <Home size={18} color="#C1272D" />
-        <Text style={styles.typeText}>{property.type}</Text>
+        <Text style={styles.typeText}>{property.tipo}</Text>
       </View>
       
-      <Text style={styles.address} numberOfLines={1}>{property.address}</Text>
+      <Text style={styles.address} numberOfLines={1}>{property.endereco}</Text>
       
       <View style={styles.locationContainer}>
         <MapPin size={16} color="#666" />
         <Text style={styles.locationText}>
-          {property.city}, {property.state}
+          {property.cidade}, {property.estado}
         </Text>
       </View>
       
       <View style={styles.detailsContainer}>
         <View style={styles.detail}>
-          <Text style={styles.detailValue}>{property.rooms}</Text>
+          <Text style={styles.detailValue}>{property.qtdQuartos}</Text>
           <Text style={styles.detailLabel}>Quartos</Text>
         </View>
         <View style={styles.detail}>
-          <Text style={styles.detailValue}>{property.bathrooms}</Text>
+          <Text style={styles.detailValue}>{property.qtdBanheiro}</Text>
           <Text style={styles.detailLabel}>Banheiros</Text>
         </View>
         <View style={styles.detail}>
-          <Text style={styles.detailValue}>{property.garageSpaces}</Text>
+          <Text style={styles.detailValue}>{property.qtdVagasGaragem}</Text>
           <Text style={styles.detailLabel}>Vagas</Text>
         </View>
       </View>
@@ -54,18 +56,29 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onPress }) => {
         <View style={styles.utility}>
           <Zap size={16} color="#666" />
           <Text style={styles.utilityText} numberOfLines={1}>
-            {property.utilities.energy.provider}
+            {property.inscricaoNeoenergia}
           </Text>
         </View>
         <View style={styles.utility}>
           <Waves size={16} color="#666" />
           <Text style={styles.utilityText} numberOfLines={1}>
-            {property.utilities.water.provider}
+            {property.inscricaoCaesb}
           </Text>
         </View>
       </View>
       
-      <Text style={styles.price}>{formatCurrency(property.value)}</Text>
+      <View style={styles.priceContainer}>
+        <Text style={styles.price}>
+          {isPriceVisible ? formatCurrency(property.valorVenal) : 'R$ *******'}
+        </Text>
+        <TouchableOpacity onPress={() => setPriceVisible(!isPriceVisible)} style={styles.eyeIcon}>
+          {isPriceVisible ? (
+            <Eye size={24} color="#871015" />
+          ) : (
+            <EyeClosed size={24} color="#871015" />
+          )}
+        </TouchableOpacity>
+      </View>
     </Card>
   );
 };
@@ -139,6 +152,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
     marginLeft: 6,
+  },
+  priceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  eyeIcon: {
+    marginLeft: 8,
   },
   price: {
     fontSize: 18,
