@@ -18,27 +18,49 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({ expense, onPress }) => {
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR');
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Data Inválida';
+      }
+      return date.toLocaleDateString('pt-BR');
+    } catch (e) {
+      console.error('Error parsing date:', dateString, e);
+      return 'Erro na Data';
+    }
   };
 
-  const isPastDue = () => {
+  const getPaymentStatus = () => {
+    if (expense.status === 'PAGO') {
+      return 'paid';
+    }
+
     const today = new Date();
-    const dueDate = new Date(expense.dueDate);
-    return !expense.isPaid && today > dueDate;
+    today.setHours(0, 0, 0, 0);
+
+    const dueDate = new Date(expense.vencimento);
+    dueDate.setHours(0, 0, 0, 0);
+
+    if (dueDate < today) {
+      return 'overdue';
+    } else {
+      return 'pending';
+    }
   };
+
+  const currentStatus = getPaymentStatus();
 
   const getTypeColor = () => {
-    switch (expense.type) {
-      case 'Energy':
+    switch (expense.tipo) {
+      case 'Energia':
         return '#FFC107';
-      case 'Water':
+      case 'Água':
         return '#2196F3';
-      case 'Tax':
-        return '#4CAF50';
-      case 'Maintenance':
+      case 'Manutenção':
         return '#9C27B0';
-      case 'Insurance':
+      case 'Seguro':
+        return '#3F51B5';
+      case 'Outro':
         return '#3F51B5';
       default:
         return '#607D8B';
@@ -49,52 +71,53 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({ expense, onPress }) => {
     <Card onPress={() => onPress(expense)} style={styles.card}>
       <View style={styles.header}>
         <View style={[styles.typeIndicator, { backgroundColor: getTypeColor() }]} />
-        <Text style={styles.type}>{expense.type}</Text>
-        {expense.installments && (
+        <Text style={styles.type}>{expense.tipo}</Text>
+        {expense.parcelas > 0 && (
           <View style={styles.installmentContainer}>
             <Text style={styles.installmentText}>
-              {expense.installments.current}/{expense.installments.total}
+              {/* Depois implementar pagamento de parcelas, individualmente */}
+              0/{expense.parcelas}
             </Text>
           </View>
         )}
       </View>
-      
-      <Text style={styles.description}>{expense.description}</Text>
-      
+
+      <Text style={styles.description}>Tipo de Despesa: {expense.tipo}</Text>
+
       <View style={styles.detailsRow}>
         <View style={styles.dateContainer}>
           <CalendarClock size={16} color="#666" />
           <Text style={[
-            styles.dateText, 
-            isPastDue() && styles.pastDueText
+            styles.dateText,
+            currentStatus === 'overdue' && styles.pastDueText
           ]}>
-            {formatDate(expense.dueDate)}
+            {formatDate(expense.vencimento)}
           </Text>
         </View>
-        
+
         <View style={[
-          styles.statusContainer, 
-          expense.isPaid ? styles.paidContainer : 
-          isPastDue() ? styles.pastDueContainer : styles.pendingContainer
+          styles.statusContainer,
+          currentStatus === 'paid' ? styles.paidContainer :
+          currentStatus === 'overdue' ? styles.pastDueContainer : styles.pendingContainer
         ]}>
-          {expense.isPaid ? (
+          {currentStatus === 'paid' ? (
             <Check size={14} color="#4CAF50" />
-          ) : isPastDue() ? (
+          ) : currentStatus === 'overdue' ? (
             <X size={14} color="#F44336" />
           ) : (
             <CalendarClock size={14} color="#FFC107" />
           )}
           <Text style={[
             styles.statusText,
-            expense.isPaid ? styles.paidText : 
-            isPastDue() ? styles.pastDueText : styles.pendingText
+            currentStatus === 'paid' ? styles.paidText :
+            currentStatus === 'overdue' ? styles.pastDueText : styles.pendingText
           ]}>
-            {expense.isPaid ? 'Pago' : isPastDue() ? 'Atrasado' : 'Pendente'}
+            {currentStatus === 'paid' ? 'Pago' : currentStatus === 'overdue' ? 'Atrasado' : 'Pendente'}
           </Text>
         </View>
       </View>
-      
-      <Text style={styles.value}>{formatCurrency(expense.value)}</Text>
+
+      <Text style={styles.value}>{formatCurrency(expense.valor)}</Text>
     </Card>
   );
 };

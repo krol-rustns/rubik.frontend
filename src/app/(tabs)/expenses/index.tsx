@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   View, 
   Text, 
@@ -18,34 +18,21 @@ import Button from '../../../../components/ui/Button';
 export default function ExpensesScreen() {
   const { propertyId } = useLocalSearchParams<{ propertyId?: string }>();
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [properties, setProperties] = useState<Property[]>([]);
+  //const [properties, setProperties] = useState<Property[]>([]);
   const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     type: '',
-    property: propertyId || '',
     status: '',
   });
 
-  useEffect(() => {
-    loadData();
-  }, [propertyId]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const propertiesData = await storage.getProperties();
-      setProperties(propertiesData);
-      
-      let expensesData: Expense[];
-      if (propertyId) {
-        expensesData = await storage.getPropertyExpenses(propertyId);
-      } else {
-        expensesData = await storage.getExpenses();
-      }
-      
+
+      const expensesData = await storage.getExpenses();
       setExpenses(expensesData);
       setFilteredExpenses(expensesData);
     } catch (error) {
@@ -53,80 +40,80 @@ export default function ExpensesScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    filterExpenses();
-  }, [searchQuery, filters, expenses]);
+    loadData();
+  }, [loadData]);
 
-  const filterExpenses = () => {
+  const filterExpenses = useCallback(() => {
     let result = [...expenses];
-    
-    // Apply search query
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(
-        expense => expense.description.toLowerCase().includes(query)
+        expense => expense.tipo.toLowerCase().includes(query)
       );
     }
-    
+
     if (filters.type) {
-      result = result.filter(expense => expense.type === filters.type);
+      result = result.filter(expense => expense.tipo === filters.type);
     }
-    
-    if (filters.property) {
-      result = result.filter(expense => expense.propertyId === filters.property);
-    }
-    
+
     if (filters.status) {
       const today = new Date();
-      
+      today.setHours(0, 0, 0, 0);
+
       switch (filters.status) {
         case 'paid':
-          result = result.filter(expense => expense.isPaid);
+          result = result.filter(expense => expense.status === 'PAGO');
           break;
         case 'pending':
           result = result.filter(expense => {
-            const dueDate = new Date(expense.dueDate);
-            return !expense.isPaid && dueDate >= today;
+            const dueDate = new Date(expense.vencimento);
+            dueDate.setHours(0, 0, 0, 0);
+            return expense.status !== 'PAGO' && dueDate >= today;
           });
           break;
         case 'overdue':
           result = result.filter(expense => {
-            const dueDate = new Date(expense.dueDate);
-            return !expense.isPaid && dueDate < today;
+            const dueDate = new Date(expense.vencimento);
+            dueDate.setHours(0, 0, 0, 0);
+            return expense.status !== 'PAGO' && dueDate < today;
           });
           break;
       }
     }
-    
+
     setFilteredExpenses(result);
-  };
+  }, [searchQuery, filters, expenses]);
+
+  useEffect(() => {
+    filterExpenses();
+  }, [filterExpenses]);
 
   const resetFilters = () => {
     setFilters({
       type: '',
-      property: propertyId || '',
       status: '',
     });
+    setSearchQuery('');
     setShowFilters(false);
   };
 
   const handleExpensePress = (expense: Expense) => {
-    // Implementar feature de chamar despesas
-    const property = properties.find(p => p.id === expense.propertyId);
-    alert(`Despesa: ${expense.description}\nImóvel: ${property?.address || 'Desconhecido'}`);
+    alert(`Despesa: ${expense.tipo}\nValor: ${expense.valor}\nVencimento: ${expense.vencimento}`);
   };
 
   const getExpenseTypes = () => {
-    const types = expenses.map(expense => expense.type);
+    const types = expenses.map(expense => expense.tipo);
     return [...new Set(types)].sort();
   };
 
-  const getPropertyName = (propertyId: string) => {
-    const property = properties.find(p => p.id === propertyId);
-    return property ? property.address.split(',')[0] : 'Desconhecido';
-  };
+  //const getPropertyName = (propertyId: string) => {
+  //  const property = properties.find(p => p.id === propertyId);
+  //  return property ? property.address.split(',')[0] : 'Desconhecido';
+  //};
 
   if (loading) {
     return (
@@ -143,7 +130,7 @@ export default function ExpensesScreen() {
           <Search size={20} color="#999" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Buscar despesas..."
+            placeholder="Buscar despesas por tipo..."
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -184,7 +171,7 @@ export default function ExpensesScreen() {
             </View>
           </View>
           
-          {!propertyId && (
+          {/*{!propertyId && (
             <View style={styles.filterRow}>
               <Text style={styles.filterLabel}>Imóvel:</Text>
               <View style={styles.filterOptions}>
@@ -210,7 +197,7 @@ export default function ExpensesScreen() {
                 ))}
               </View>
             </View>
-          )}
+          )} */}
           
           <View style={styles.filterRow}>
             <Text style={styles.filterLabel}>Status:</Text>
@@ -306,11 +293,11 @@ export default function ExpensesScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.expenseItem}>
-              {!propertyId && !filters.property && (
+              {/* {!propertyId && !filters.property && (
                 <Text style={styles.propertyName}>
                   {getPropertyName(item.propertyId)}
                 </Text>
-              )}
+              )} */}
               <ExpenseCard
                 expense={item}
                 onPress={handleExpensePress}
@@ -323,6 +310,7 @@ export default function ExpensesScreen() {
       
       <TouchableOpacity
         style={styles.fab}
+        onPress={() => router.push('/(app)/(tabs)/expenses/add')}
       >
         <Plus color="#FFFFFF" size={24} />
       </TouchableOpacity>

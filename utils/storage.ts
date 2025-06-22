@@ -330,30 +330,50 @@ export const storage = {
     });
   },
   
-  getExpenses: (): Promise<Expense[]> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const allExpenses = mockProperties.flatMap(p => p.expenses);
-        resolve(allExpenses);
-      }, 300);
-    });
+  getExpenses:  async (): Promise<Expense[]> => {
+    const user = await storage.getUser();
+    const token = await storage.getToken();
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+    if (!token) {
+      throw new Error('No token found');
+    }
+
+    try {
+      const emailEncoded = encodeURIComponent(user.email);
+      const response = await api.get(`/despesa/user/${emailEncoded}`, token);
+  
+      if (response.error) {
+        throw new Error(response.error);
+      }
+  
+      return response.data as Expense[];
+    } catch (error) {
+      console.error('Failed to fetch expenses:', error);
+      throw new Error('Failed to fetch expenses');
+    }
   },
   
-  getPropertyExpenses: (propertyId: string): Promise<Expense[]> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const property = mockProperties.find(p => p.id === propertyId);
-        resolve(property?.expenses || []);
-      }, 300);
-    });
-  },
+  getPropertyExpenses: async (cep: string): Promise<Expense[]> => {
+    const token = await storage.getToken();
+
+    if (!token) {
+      throw new Error('No token found');
+    }
+
+    try {
+      const response = await api.get(`/despesa/${cep}`, token);
   
-  getPropertyDocuments: (propertyId: string): Promise<Document[]> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const property = mockProperties.find(p => p.id === propertyId);
-        resolve(property?.documents || []);
-      }, 300);
-    });
+      if (response.error) {
+        throw new Error(response.error);
+      }
+  
+      return response.data as Expense[];
+    } catch (error) {
+      console.error('Failed to fetch expenses by CEP:', error);
+      throw new Error('Failed to fetch expenses by CEP');
+    }
   },
 };

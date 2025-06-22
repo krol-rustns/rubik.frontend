@@ -16,11 +16,11 @@ export default function ProfileScreen() {
 
   const confirmLogout = () => {
     signOut();
-    setIsModalVisible(false); // Close the modal after logout
+    setIsModalVisible(false);
   };
 
   const cancelLogout = () => {
-    setIsModalVisible(false); // Just close the modal without logging out
+    setIsModalVisible(false);
   };
 
   const menuItems = [
@@ -93,7 +93,7 @@ export default function ProfileScreen() {
         animationType="fade"
         transparent={true}
         visible={isModalVisible}
-        onRequestClose={cancelLogout} // Close modal if user taps outside
+        onRequestClose={cancelLogout}
       >
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>

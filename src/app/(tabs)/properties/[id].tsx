@@ -271,12 +271,12 @@ export default function PropertyDetailScreen() {
             onPress={() => router.push(`../expenses?propertyId=${property.id}`)}
             style={styles.button}
           />
-          <Button
+          {/*<Button
             title="Adicionar Despesa"
             variant="outline"
             onPress={() => Alert.alert('Funcionalidade', 'Adicionar despesa')}
             style={styles.button}
-          />
+          />*/}
         </View>
       </View>
     </ScrollView>

@@ -38,7 +38,18 @@ export default function HomeScreen() {
     });
   };
 
-  console.log()
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Data Inválida';
+      }
+      return date.toLocaleDateString('pt-BR');
+    } catch (e) {
+      console.error('Error parsing date:', dateString, e);
+      return 'Erro na Data';
+    }
+  };
 
   const isOverdue = (): boolean => {
     if (!userInformations?.proximoVencimento) return false;
@@ -168,7 +179,7 @@ export default function HomeScreen() {
             <Text style={styles.expenseSummaryLabel}>Próximo Vencimento</Text>
             {userInformations?.proximoVencimento ? (
               <Text style={styles.expenseSummaryDate}>
-                {userInformations?.proximoVencimento}
+                {formatDate(userInformations?.proximoVencimento)}
               </Text>
             ) : (
               <Text style={[styles.expenseSummaryNoData, { fontStyle: 'italic' }]}>Nenhuma</Text>
@@ -312,7 +323,7 @@ const styles = StyleSheet.create({
   },
   expenseSummaryValue: {
     fontSize: 18,
-    fontFamily: 'Rubik_700Bold',
+    fontFamily: 'Rubik_500Medium',
     color: '#333',
   },
   expenseSummaryDate: {

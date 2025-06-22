@@ -75,7 +75,7 @@ export default function AddProperty() {
     <ScrollView style={styles.container}>
       <View style={styles.container}>
         <Text style={styles.header}>
-          <Text style={styles.headerHighlight}>Preencha</Text> os dados
+          <Text style={styles.headerHighlight}>Preencha</Text> os campos abaixo
         </Text>
 
         <Formik
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   header: {
-    fontSize: 30,
+    fontSize: 35,
     fontFamily: 'Rubik_400Regular',
     marginTop: 30,
     color: '#333',

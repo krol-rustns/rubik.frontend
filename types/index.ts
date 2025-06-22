@@ -41,14 +41,9 @@ export interface Document {
 
 export interface Expense {
   id: string;
-  propertyId: string;
-  type: 'Energy' | 'Water' | 'Tax' | 'Maintenance' | 'Insurance' | 'Other';
-  description: string;
-  value: number;
-  dueDate: string;
-  isPaid: boolean;
-  installments?: {
-    current: number;
-    total: number;
-  };
+  tipo: 'Energia' | 'Água' | 'Manutenção' | 'Seguro' | 'Outro';
+  valor: number;
+  vencimento: string;
+  parcelas: number;
+  status: string;
 }
