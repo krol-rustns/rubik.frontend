@@ -1,27 +1,26 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useAuth } from '../../../context/AuthContext';
 import { storage } from '../../../utils/storage';
-import { Property, Expense } from '../../../types';
+import { Property, Expense, UserData, User } from '../../../types';
 import Button from '../../../components/ui/Button';
 import Card from '../../../components/ui/Card';
 import { router } from 'expo-router';
-import { Building2, Receipt, AlertCircle } from 'lucide-react-native';
+import { Building2, Receipt, AlertCircle, SquareCheckBig } from 'lucide-react-native';
 
 export default function HomeScreen() {
-  const { user } = useAuth();
-  const [properties, setProperties] = React.useState<Property[]>([]);
-  const [expenses, setExpenses] = React.useState<Expense[]>([]);
+  const [properties, setProperties] = React.useState<User | null>(null);
+  const [userInformations, setUserInformations] = React.useState<UserData | null>(null);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     const loadData = async () => {
       try {
-        const propertiesData = await storage.getProperties();
-        const expensesData = await storage.getExpenses();
+        const userData = await storage.getUserData();
+        const userPropertiesData = await storage.getUser();
         
-        setProperties(propertiesData);
-        setExpenses(expensesData);
+        setUserInformations(userData);
+        setProperties(userPropertiesData)
       } catch (error) {
         console.error('Error loading data:', error);
       } finally {
@@ -32,18 +31,6 @@ export default function HomeScreen() {
     loadData();
   }, []);
 
-  const getPendingExpenses = () => {
-    return expenses.filter(expense => !expense.isPaid);
-  };
-
-  const getOverdueExpenses = () => {
-    const today = new Date();
-    return expenses.filter(expense => {
-      const dueDate = new Date(expense.dueDate);
-      return !expense.isPaid && dueDate < today;
-    });
-  };
-
   const formatCurrency = (value: number) => {
     return value.toLocaleString('pt-BR', {
       style: 'currency',
@@ -51,12 +38,15 @@ export default function HomeScreen() {
     });
   };
 
-  const getTotalPropertyValue = () => {
-    return 0;
-  };
+  console.log()
 
-  const getPendingExpensesValue = () => {
-    return getPendingExpenses().reduce((total, expense) => total + expense.value, 0);
+  const isOverdue = (): boolean => {
+    if (!userInformations?.proximoVencimento) return false;
+
+    const today = new Date();
+    const dueDate = new Date(userInformations.proximoVencimento);
+
+    return dueDate < today;
   };
 
   if (loading) {
@@ -70,50 +60,62 @@ export default function HomeScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.greeting}>Bem-vindo de volta ao Rubik!</Text>
-        <Text style={styles.welcomeMessage}>Olá, {user?.nome || 'Usuário'}</Text>
+        <Text style={styles.welcomeMessage}>Olá, {userInformations?.nome || 'Usuário'}</Text>
+        <Text style={styles.greeting}>Bem-vindo(a) de volta ao Rubik!</Text>
       </View>
 
       <View style={styles.statsContainer}>
         <Card style={styles.statCard}>
           <Text style={styles.statValue}>
-            {properties.length}
+            {userInformations?.qtdImoveis}
           </Text>
-          <Text style={styles.statLabel}>Imóveis</Text>
+          <Text style={styles.statLabel}>Seus Imóveis</Text>
         </Card>
         
         <Card style={styles.statCard}>
           <Text style={styles.statValue}>
-            {getTotalPropertyValue()}
+            0 {/* Placeholder para "Imóveis alugados" */}
           </Text>
           <Text style={styles.statLabel}>Imóveis alugados</Text>
         </Card>
         
         <Card style={styles.statCard}>
           <Text style={styles.statValue}>
-            {getPendingExpenses().length}
+            {userInformations?.qtdDespesasPendentes || 0}
           </Text>
           <Text style={styles.statLabel}>Despesas Pendentes</Text>
         </Card>
       </View>
 
-      {getOverdueExpenses().length > 0 && (
-        <Card style={styles.alertCard}>
-          <View style={styles.alertHeader}>
+      <Card 
+        style={[styles.alertCard, { borderColor: isOverdue() ? '#F44336' : '#665' }]}>
+        <View style={styles.alertHeader}>
+          {isOverdue() ? (
             <AlertCircle size={20} color="#F44336" />
-            <Text style={styles.alertTitle}>Atenção!</Text>
-          </View>
-          <Text style={styles.alertMessage}>
-            Você tem {getOverdueExpenses().length} despesas vencidas no valor total de {formatCurrency(getOverdueExpenses().reduce((total, expense) => total + expense.value, 0))}
+          ) : (
+            <SquareCheckBig size={20} color="#665" />
+          )}
+          
+          <Text style={[styles.alertTitle, { color: isOverdue() ? '#F44336' : '#665' }]}>
+            {isOverdue() ? "Atenção!" : "Tudo certo!"}
           </Text>
+        </View>
+
+        <Text style={[styles.alertMessage, { color: isOverdue() ? '#F44336' : '#665' }]}>
+          {isOverdue() 
+            ? "Você possui despesas vencidas, clique no botão abaixo para acompanhar os pagamentos."
+            : "Você não tem despesas vencidas! Continue acompanhando seus pagamentos."}
+        </Text>
+
+        {isOverdue() && (
           <Button
             title="Ver Despesas"
             variant="outline"
             style={styles.alertButton}
             onPress={() => router.push('../expenses')}
           />
-        </Card>
-      )}
+        )}
+      </Card>
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
@@ -121,11 +123,11 @@ export default function HomeScreen() {
           <Text style={styles.sectionTitle}>Meus Imóveis</Text>
         </View>
         
-        {properties.length === 0 ? (
+        {userInformations?.qtdImoveis === 0 ? (
           <Card style={styles.emptyCard}>
             <Text style={styles.emptyText}>Você ainda não possui imóveis cadastrados</Text>
             <Button
-              title="Adicionar Imóvel"
+              title="Adicione aqui"
               variant="secondary"
               style={styles.emptyButton}
               onPress={() => router.push('../properties/add')}
@@ -158,22 +160,18 @@ export default function HomeScreen() {
           <Card style={styles.expenseSummaryCard}>
             <Text style={styles.expenseSummaryLabel}>Pendentes</Text>
             <Text style={styles.expenseSummaryValue}>
-              {formatCurrency(getPendingExpensesValue())}
+              {formatCurrency(userInformations?.valorDespesas || 0)}
             </Text>
           </Card>
           
           <Card style={styles.expenseSummaryCard}>
             <Text style={styles.expenseSummaryLabel}>Próximo Vencimento</Text>
-            {getPendingExpenses().length > 0 ? (
+            {userInformations?.proximoVencimento ? (
               <Text style={styles.expenseSummaryDate}>
-                {new Date(
-                  Math.min(
-                    ...getPendingExpenses().map(e => new Date(e.dueDate).getTime())
-                  )
-                ).toLocaleDateString('pt-BR')}
+                {userInformations?.proximoVencimento}
               </Text>
             ) : (
-              <Text style={styles.expenseSummaryNoData}>Nenhuma</Text>
+              <Text style={[styles.expenseSummaryNoData, { fontStyle: 'italic' }]}>Nenhuma</Text>
             )}
           </Card>
         </View>
@@ -195,8 +193,8 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#C1272D',
     padding: 20,
-    paddingTop: 60,
-    paddingBottom: 30,
+    paddingTop: 50,
+    paddingBottom: 40,
   },
   greeting: {
     fontSize: 16,
@@ -208,6 +206,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontFamily: 'Rubik_700Bold',
     marginTop: 4,
+    marginBottom: 4,
   },
   statsContainer: {
     flexDirection: 'row',
@@ -234,7 +233,7 @@ const styles = StyleSheet.create({
   },
   alertCard: {
     marginHorizontal: 16,
-    marginTop: 20,
+    marginTop: 8,
     padding: 16,
     borderLeftWidth: 4,
     borderLeftColor: '#F44336',
@@ -259,9 +258,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   section: {
-    marginTop: 24,
+    marginTop: 10,
     marginHorizontal: 16,
-    marginBottom: 16,
+    marginBottom: 10,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -290,6 +289,8 @@ const styles = StyleSheet.create({
   actionButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 10,
+    marginBottom: 10,
   },
   actionButton: {
     flex: 1,

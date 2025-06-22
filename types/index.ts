@@ -2,6 +2,15 @@ export interface User {
   id: string;
   nome: string;
   email: string;
+  imoveis: Property[];
+}
+
+export interface UserData {
+  nome: string;
+  qtdImoveis: number;
+  valorDespesas: number;
+  qtdDespesasPendentes: number;
+  proximoVencimento: string;
 }
 
 export interface Property {

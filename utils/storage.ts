@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from './api';
-import { Property, User, Document, Expense } from '../types';
+import { Property, User, Document, Expense, UserData } from '../types';
 
 const TOKEN_KEY = '@auth_token';
 const USER_KEY = '@user_data';
@@ -219,6 +219,35 @@ export const storage = {
 
   getToken: async (): Promise<string | null> => {
     return AsyncStorage.getItem(TOKEN_KEY);
+  },
+
+  getUserData: async (): Promise<UserData | null> => {
+    const user = await storage.getUser();
+    const token = await storage.getToken();
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+    if (!token) {
+      throw new Error('No token found');
+    }
+
+    try {
+      const response = await api.get(`/user/${user.email}/data`, token);
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      if (!response.data) {
+        throw new Error('No properties data received');
+      }
+
+      return response.data as UserData;
+    } catch (error) {
+      console.error('Failed to fetch properties:', error);
+      throw new Error('Failed to fetch properties');
+    }
   },
   
   getProperties: (): Promise<Property[]> => {

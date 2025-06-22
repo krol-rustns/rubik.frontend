@@ -24,6 +24,10 @@ export default function Index() {
       return null;
   }
 
+  if (user) {
+    return <Redirect href="/(tabs)" />;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.spacer} />
