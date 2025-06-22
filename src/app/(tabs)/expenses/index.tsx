@@ -6,7 +6,9 @@ import {
   FlatList, 
   TextInput, 
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
+  Modal,
+  Pressable
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Plus, Search, FilterX, Filter, CheckSquare, AlertTriangle, Clock } from 'lucide-react-native';
@@ -27,6 +29,8 @@ export default function ExpensesScreen() {
     type: '',
     status: '',
   });
+
+  const [isExpenseModalVisible, setIsExpenseModalVisible] = useState(false);
 
   const loadData = useCallback(async () => {
     try {
@@ -101,13 +105,23 @@ export default function ExpensesScreen() {
     setShowFilters(false);
   };
 
-  const handleExpensePress = (expense: Expense) => {
-    alert(`Despesa: ${expense.tipo}\nValor: ${expense.valor}\nVencimento: ${expense.vencimento}`);
-  };
-
   const getExpenseTypes = () => {
     const types = expenses.map(expense => expense.tipo);
     return [...new Set(types)].sort();
+  };
+
+  const handleExpensePress = () => {
+    setIsExpenseModalVisible(true);
+  };
+
+  const confirmExpenseAction = () => {
+    console.log('Action confirmed!');
+    setIsExpenseModalVisible(false);
+  };
+
+  const cancelExpenseAction = () => {
+    console.log('Action cancelled.');
+    setIsExpenseModalVisible(false);
   };
 
   //const getPropertyName = (propertyId: string) => {
@@ -314,6 +328,27 @@ export default function ExpensesScreen() {
       >
         <Plus color="#FFFFFF" size={24} />
       </TouchableOpacity>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isExpenseModalVisible}
+        onRequestClose={cancelExpenseAction}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Deseja prosseguir alterando o estado para PAGO?</Text>
+            <View style={styles.modalButtons}>
+              <Pressable style={styles.modalButton} onPress={confirmExpenseAction}>
+                <Text style={styles.modalButtonText}>Sim</Text>
+              </Pressable>
+              <Pressable style={styles.modalButton} onPress={cancelExpenseAction}>
+                <Text style={styles.modalButtonText}>Cancelar</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -466,5 +501,42 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    marginBottom: 20,
+    textAlign: 'center',
+    fontFamily: 'Rubik_500Medium',
+    color: '#333',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalButton: {
+    padding: 12,
+    backgroundColor: '#C1272D',
+    borderRadius: 8,
+    width: '48%',
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontFamily: 'Rubik_500Medium',
   },
 });

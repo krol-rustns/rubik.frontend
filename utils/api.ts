@@ -66,4 +66,27 @@ export const api = {
       };
     }
   },
+
+  async put<T>(endpoint: string, body: any, token?: string): Promise<ApiResponse<T>> {
+    try {
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${API_URL}${endpoint}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(body),
+      });
+      return handleResponse<T>(response);
+    } catch (error) {
+      return {
+        error: 'Network error occurred',
+      };
+    }
+  },
 };

@@ -268,7 +268,7 @@ export default function PropertyDetailScreen() {
         <View style={styles.buttonContainer}>
           <Button
             title="Ver Despesas"
-            onPress={() => router.push(`../expenses?propertyId=${property.id}`)}
+            onPress={() => router.push(`../expenses`)}
             style={styles.button}
           />
           {/*<Button
