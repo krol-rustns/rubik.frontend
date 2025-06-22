@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert, Modal, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { LogOut, User, Settings, HelpCircle, Bell, Shield, FileText } from 'lucide-react-native';
 import { useAuth } from '../../../context/AuthContext';
@@ -8,22 +8,19 @@ import Card from '../../../components/ui/Card';
 export default function ProfileScreen() {
   const { user, signOut } = useAuth();
 
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const handleLogout = () => {
-    Alert.alert(
-      'Sair',
-      'Tem certeza que deseja sair?',
-      [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-        {
-          text: 'Sair',
-          onPress: signOut,
-          style: 'destructive',
-        },
-      ]
-    );
+    setIsModalVisible(true);
+  };
+
+  const confirmLogout = () => {
+    signOut();
+    setIsModalVisible(false); // Close the modal after logout
+  };
+
+  const cancelLogout = () => {
+    setIsModalVisible(false); // Just close the modal without logging out
   };
 
   const menuItems = [
@@ -48,10 +45,10 @@ export default function ProfileScreen() {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.avatarContainer}>
-          <Text style={styles.avatarText}>{user?.name.charAt(0) || 'U'}</Text>
+          <Text style={styles.avatarText}>{user?.nome.charAt(0) || 'U'}</Text>
         </View>
         
-        <Text style={styles.userName}>{user?.name || 'Usuário'}</Text>
+        <Text style={styles.userName}>{user?.nome || 'Usuário'}</Text>
         <Text style={styles.userEmail}>{user?.email || 'usuario@exemplo.com'}</Text>
         
         <TouchableOpacity
@@ -91,6 +88,27 @@ export default function ProfileScreen() {
         
         <Text style={styles.versionText}>Rubik v1.0.0</Text>
       </View>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={cancelLogout} // Close modal if user taps outside
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Tem certeza que deseja sair?</Text>
+            <View style={styles.modalButtons}>
+              <Pressable style={styles.modalButton} onPress={confirmLogout}>
+                <Text style={styles.modalButtonText}>Sim</Text>
+              </Pressable>
+              <Pressable style={styles.modalButton} onPress={cancelLogout}>
+                <Text style={styles.modalButtonText}>Não</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -189,5 +207,38 @@ const styles = StyleSheet.create({
     marginTop: 24,
     color: '#999',
     fontSize: 12,
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    marginBottom: 20,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalButton: {
+    padding: 10,
+    backgroundColor: '#C1272D',
+    borderRadius: 5,
+    width: '45%',
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 16,
   },
 });

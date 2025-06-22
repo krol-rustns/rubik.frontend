@@ -71,7 +71,7 @@ export default function HomeScreen() {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.greeting}>Bem-vindo de volta ao Rubik!</Text>
-        <Text style={styles.welcomeMessage}>Olá, {user?.name || 'Usuário'}</Text>
+        <Text style={styles.welcomeMessage}>Olá, {user?.nome || 'Usuário'}</Text>
       </View>
 
       <View style={styles.statsContainer}>

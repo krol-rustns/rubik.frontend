@@ -7,7 +7,8 @@ interface AuthContextData {
   user: User | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => void;
+  signUp: (name: string, email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -17,24 +18,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Checa se o user já está logado
-    const loadUser = async () => {
-      const savedUser = storage.getUser();
-      if (savedUser) {
-        setUser(savedUser);
-      }
-      setLoading(false);
-    };
-
     loadUser();
   }, []);
+
+  const loadUser = async () => {
+    try {
+      const user = await storage.getUser();
+      if (user) {
+        setUser(user);
+      }
+    } catch (error) {
+      console.error('Error loading user:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true);
       const user = await storage.login(email, password);
       setUser(user);
-      router.replace('../(tabs)');
+      router.replace('/(tabs)');
+    } catch (error) {
+      console.error("Error signing in:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signUp = async (name: string, email: string, password: string) => {
+    try {
+      setLoading(true);
+      await storage.register({ name, email, password });
+      // After successful registration, log the user in
+      await signIn(email, password);
     } catch (error) {
       throw error;
     } finally {
@@ -42,13 +61,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signOut = () => {
-    setUser(null);
-    router.replace('../auth/login');
+  const signOut = async () => {
+    try {
+      await storage.logout();
+      setUser(null);
+      router.replace('/auth/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );

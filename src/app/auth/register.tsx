@@ -7,6 +7,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
+import { useAuth } from '@/context/AuthContext';
 
 const registerSchema = Yup.object().shape({
   name: Yup.string()
@@ -23,6 +24,9 @@ const registerSchema = Yup.object().shape({
 });
 
 export default function Register() {
+  const { signUp } = useAuth();
+  const [registerError, setRegisterError] = useState<string | null>(null);
+
   let [fontsLoaded] = useFonts({
     Rubik_400Regular,
     Rubik_300Light,
@@ -32,10 +36,13 @@ export default function Register() {
     return null;
   }
   
-  const handleRegister = (values: any) => {
-    // Chamada de API aqui
-    console.log(values);
-    router.replace('/auth/login');
+  const handleRegister = async (values: { email: string; name: string; password: string }) => {
+    try {
+      setRegisterError(null);
+      await signUp (values.name, values.email, values.password)
+    } catch (error) {
+      setRegisterError('Não foi possível realizar o login!')
+    }
   };
 
   return (
@@ -62,7 +69,7 @@ export default function Register() {
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isValid, isSubmitting }) => (
           <View style={styles.formContainer}>
             <Input
-              label="Nome completo"
+              label="Nome"
               placeholder="Seu nome"
               value={values.name}
               onChangeText={handleChange('name')}
@@ -100,6 +107,10 @@ export default function Register() {
               error={touched.confirmPassword && errors.confirmPassword ? errors.confirmPassword : undefined}
               secureTextEntry
             />
+
+            {registerError && (
+              <Text style={styles.errorText}>{registerError}</Text>
+            )}
             
             <Button
               title="Registrar"
@@ -160,6 +171,12 @@ const styles = StyleSheet.create({
   },
   registerButton: {
     marginTop: 30,
+  },
+  errorText: {
+    color: '#C1272D',
+    marginTop: 20,
+    fontSize: 14,
+    textAlign: 'center',
   },
   loginContainer: {
     flexDirection: 'row',

@@ -1,13 +1,18 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { api } from './api';
 import { Property, User, Document, Expense } from '../types';
 
-// Dados estáticos para popular ui
-const mockUsers: User[] = [
-  {
-    id: '1',
-    name: 'Joquebede Levi',
-    email: 'joquebede@example.com',
-  },
-];
+const TOKEN_KEY = '@auth_token';
+const USER_KEY = '@user_data';
+
+interface LoginResponse {
+  token: string;
+  user: User;
+}
+
+interface RegisterResponse {
+  message: string;
+}
 
 const mockProperties: Property[] = [
   {
@@ -167,22 +172,53 @@ const mockProperties: Property[] = [
 
 export const storage = {
   // Auth
-  getUser: (): User | null => {
-    // Aqui chama o endpoint de user info
-    return mockUsers[0];
-  },
-  
-  login: (email: string, password: string): Promise<User> => {
-    return new Promise((resolve, reject) => {
-      // Simular chamada API de auth
-      setTimeout(() => {
-        if (email === 'joquebede@example.com' && password === 'password') {
-          resolve(mockUsers[0]);
-        } else {
-          reject(new Error('Invalid credentials'));
-        }
-      }, 500);
+  login: async (email: string, senha: string): Promise<User> => {
+    const response = await api.post<LoginResponse>('/auth/login', {
+      email,
+      senha,
     });
+
+    if (response.error) {
+      throw new Error(response.error);
+    }
+
+    if (!response.data) {
+      throw new Error('No data received from server');
+    }
+
+    const { token, user } = response.data;
+    
+    await AsyncStorage.setItem(TOKEN_KEY, token);
+    await AsyncStorage.setItem(USER_KEY, JSON.stringify(user));
+
+    return user;
+  },
+
+  register: async (userData: { name: string; email: string; password: string }): Promise<void> => {
+    const { name, email, password } = userData;
+
+    const response = await api.post<RegisterResponse>('/auth/register', {
+      nome: name,
+      email,
+      senha: password
+    });
+
+    if (response.error) {
+      throw new Error(response.error);
+    }
+  },
+
+  logout: async (): Promise<void> => {
+    await AsyncStorage.multiRemove([TOKEN_KEY, USER_KEY]);
+  },
+
+  getUser: async (): Promise<User | null> => {
+    const userJson = await AsyncStorage.getItem(USER_KEY);
+    return userJson ? JSON.parse(userJson) : null;
+  },
+
+  getToken: async (): Promise<string | null> => {
+    return AsyncStorage.getItem(TOKEN_KEY);
   },
   
   getProperties: (): Promise<Property[]> => {
