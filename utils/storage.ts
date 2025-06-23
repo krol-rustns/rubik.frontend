@@ -190,6 +190,27 @@ export const storage = {
       throw new Error('Failed to update property');
     }
   },
+
+  addExpense: async (expenseData: Expense, cep: string): Promise<Expense> => {
+    const token = await storage.getToken();
+
+    if (!token) {
+      throw new Error('No token found');
+    }
+
+    try {
+      const response = await api.post<Expense>(`/despesa/${cep}`, expenseData, token);
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      return response.data as Expense;
+    } catch (error) {
+      console.error('Failed to add expense:', error);
+      throw new Error('Failed to add expense');
+    }
+  },
   
   getExpenses:  async (): Promise<Expense[]> => {
     const user = await storage.getUser();

@@ -63,9 +63,9 @@ export default function AddProperty() {
 
       values.userEmail = userData.userEmail
       
-      const addedProperty = await storage.addProperty(values);
+      await storage.addProperty(values);
 
-      console.log('Property Added:', values);
+      router.back();
     } catch (error) {
       setPropertyError('Erro ao adicionar propriedade');
     }

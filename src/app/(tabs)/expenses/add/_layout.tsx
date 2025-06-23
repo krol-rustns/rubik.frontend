@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-export default function EditPropertiesLayout() {
+export default function AddExpensesLayout() {
   return (
     <Stack
       screenOptions={{
@@ -17,7 +17,7 @@ export default function EditPropertiesLayout() {
       <Stack.Screen 
         name="index" 
         options={{ 
-          title: 'Editar imóvel',
+          title: 'Adicionar Despesa',
           headerShadowVisible: false,
         }} 
       />

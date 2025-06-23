@@ -49,7 +49,7 @@ export default function Register() {
     <View style={styles.container}>
       <TouchableOpacity 
         style={styles.backButton}
-        onPress={() => router.back()}
+        onPress={() => router.push(`/`)}
       >
         <ArrowLeft color="#FFFFFF" size={20} />
       </TouchableOpacity>

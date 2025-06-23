@@ -324,7 +324,7 @@ export default function ExpensesScreen() {
       
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => router.push('/(app)/(tabs)/expenses/add')}
+        onPress={() => router.push('../expenses/add')}
       >
         <Plus color="#FFFFFF" size={24} />
       </TouchableOpacity>
