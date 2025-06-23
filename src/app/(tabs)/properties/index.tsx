@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   View, 
   Text, 
@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { Plus, Search, FilterX, Filter } from 'lucide-react-native';
 import { Property } from '../../../../types';
 import { storage } from '../../../../utils/storage';
@@ -26,11 +26,7 @@ export default function PropertiesScreen() {
     city: '',
   });
 
-  useEffect(() => {
-    loadProperties();
-  }, []);
-
-  const loadProperties = async () => {
+  const loadProperties = useCallback(async () => {
     try {
       setLoading(true);
       const data = await storage.getProperties();
@@ -41,7 +37,15 @@ export default function PropertiesScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadProperties();
+      return () => {
+      };
+    }, [loadProperties])
+  );
 
   useEffect(() => {
     filterProperties();

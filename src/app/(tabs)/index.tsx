@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useAuth } from '../../../context/AuthContext';
 import { storage } from '../../../utils/storage';
 import { Property, Expense, UserData, User } from '../../../types';
 import Button from '../../../components/ui/Button';
 import Card from '../../../components/ui/Card';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { Building2, Receipt, AlertCircle, SquareCheckBig } from 'lucide-react-native';
 
 export default function HomeScreen() {
@@ -13,23 +13,28 @@ export default function HomeScreen() {
   const [userInformations, setUserInformations] = React.useState<UserData | null>(null);
   const [loading, setLoading] = React.useState(true);
 
-  React.useEffect(() => {
-    const loadData = async () => {
-      try {
-        const userData = await storage.getUserData();
-        const userPropertiesData = await storage.getUser();
-        
-        setUserInformations(userData);
-        setProperties(userPropertiesData)
-      } catch (error) {
-        console.error('Error loading data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
+  const loadData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const userData = await storage.getUserData();
+      //const userPropertiesData = await storage.getUser();
+      
+      setUserInformations(userData);
+      //setProperties(userPropertiesData)
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+      return () => {
+      };
+    }, [loadData])
+  );
 
   const formatCurrency = (value: number) => {
     return value.toLocaleString('pt-BR', {

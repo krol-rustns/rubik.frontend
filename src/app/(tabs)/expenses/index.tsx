@@ -10,7 +10,7 @@ import {
   Modal,
   Pressable
 } from 'react-native';
-import { useLocalSearchParams, router } from 'expo-router';
+import { useLocalSearchParams, router, useFocusEffect } from 'expo-router';
 import { Plus, Search, FilterX, Filter, CheckSquare, AlertTriangle, Clock } from 'lucide-react-native';
 import { Expense, Property } from '../../../../types';
 import { storage } from '../../../../utils/storage';
@@ -46,9 +46,13 @@ export default function ExpensesScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+      return () => {
+      };
+    }, [loadData])
+  );
 
   const filterExpenses = useCallback(() => {
     let result = [...expenses];

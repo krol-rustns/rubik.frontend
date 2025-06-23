@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   View, 
   Text, 
@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert
 } from 'react-native';
-import { useLocalSearchParams, router, useNavigation } from 'expo-router';
+import { useLocalSearchParams, router, useNavigation, useFocusEffect } from 'expo-router';
 import { 
   MapPin, 
   Calendar, 
@@ -36,12 +36,6 @@ export default function PropertyDetailScreen() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (id) {
-      loadProperty(id);
-    }
-  }, [id]);
-
-  useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity 
@@ -54,7 +48,7 @@ export default function PropertyDetailScreen() {
     });
   }, [navigation, id]);
 
-  const loadProperty = async (propertyId: string) => {
+  const loadProperty = useCallback(async (propertyId: string) => {
     try {
       setLoading(true);
       const data = await storage.getPropertyByCep(propertyId);
@@ -70,7 +64,17 @@ export default function PropertyDetailScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (id) {
+        loadProperty(id);
+      }
+      return () => {
+      };
+    }, [id, loadProperty])
+  );
 
   const formatCurrency = (value: number) => {
     return value.toLocaleString('pt-BR', {
